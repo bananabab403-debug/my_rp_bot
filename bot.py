@@ -30,7 +30,7 @@ def send_welcome(message):
     user_id = message.from_user.id
     # Создаем чат с системной инструкцией
     user_sessions[user_id] = ai_client.chats.create(
-        model="gemini-3.8-flash",
+        model='gemini-2.5-flash',
         config=types.GenerateContentConfig(
             system_instruction=SYSTEM_INSTRUCTION,
             temperature=0.8,
@@ -39,7 +39,7 @@ def send_welcome(message):
     
     # Исправление для конфигурации
     chat = ai_client.chats.create(
-        model="gemini-3.8-flash",
+        model='gemini-2.5-flash',
         config=genai.types.GenerateContentConfig(
             system_instruction=SYSTEM_INSTRUCTION,
             temperature=0.8
