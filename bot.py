@@ -23,7 +23,7 @@ SYSTEM_INSTRUCTION = """
 """
 
 # Хранилище диалогов
-user_sessions = {}
+user_histories = {}
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -59,17 +59,38 @@ def reset_chat(message):
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
     user_id = message.from_user.id
+    bot.send_chat_action(message.chat.id, 'typing')
     
-    if user_id not in user_sessions:
-        user_sessions[user_id] = ai_client.chats.create(
-            model="gemini-3.8-flash",
-            config=genai.types.GenerateContentConfig(
+    # 1. Если истории нет для этого юзера — создаем с системной инструкцией
+    if user_id not in user_histories:
+        user_histories[user_id] = []
+
+    # 2. Добавляем сообщение пользователя в его историю
+    user_histories[user_id].append({"role": "user", "parts": [message.text]})
+    
+    # 3. ГЛАВНАЯ ФИШКА: Оставляем в памяти только последние 6 сообщений (чтобы не тормозило!)
+    user_histories[user_id] = user_histories[user_id][-6:]
+
+    try:
+        # 4. Отправляем обрезанную историю вместе с системной инструкцией
+        response = client.models.generate_content(
+            model='gemini-2.5-flash', # или твоя рабочая версия флеш-модели
+            contents=user_histories[user_id],
+            config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_INSTRUCTION,
-                temperature=0.8
+                temperature=0.8,
             )
         )
-    
-    try:
+        
+        bot_reply = response.text
+        
+        # 5. Добавляем ответ бота в историю, чтобы он помнил, что ответил
+        user_histories[user_id].append({"role": "model", "parts": [bot_reply]})
+        
+        bot.reply_to(message, bot_reply)
+        
+    except Exception as e:
+        bot.reply_to(message, f"Ошибка: {e}")
         # Отправляем статус печати
         bot.send_chat_action(message.chat.id, 'typing')
         
