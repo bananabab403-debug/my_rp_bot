@@ -69,7 +69,7 @@ def handle_message(message):
     user_histories[user_id].append({"role": "user", "parts": [message.text]})
     
     # 3. ГЛАВНАЯ ФИШКА: Оставляем в памяти только последние 6 сообщений (чтобы не тормозило!)
-    user_histories[user_id] = user_histories[user_id][-6:]
+    user_histories[user_id] = user_histories[user_id][-3:]
 
     try:
         # 4. Отправляем обрезанную историю вместе с системной инструкцией
