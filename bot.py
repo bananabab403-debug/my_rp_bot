@@ -6,11 +6,12 @@ from google import genai
 TELEGRAM_BOT_TOKEN = "8736970956:AAF_QiLOQOG-06YgSL3VwrwtJOqU7aIQkZ8"
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-user_sessions = {}
+
 
 # Инициализация бота и ИИ
 bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
 ai_client = genai.Client(api_key=GEMINI_API_KEY)
+user_sessions = {}
 
 # Инструкция для роли (характер бота)
 SYSTEM_INSTRUCTION = """
@@ -105,5 +106,5 @@ def handle_message(message):
 
 if __name__ == "__main__":
     print(">>> Бот успешно запущен и ждёт сообщений! <<<")
-    bot.remove_webhook()
+    bot.remove_webhook(drop_pending_updates=True)
     bot.infinity_polling()
