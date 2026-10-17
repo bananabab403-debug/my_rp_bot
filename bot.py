@@ -4,6 +4,7 @@ from google import genai
 
 # --- ТВОИ КЛЮЧИ ---
 TELEGRAM_BOT_TOKEN = "8736970956:AAHH49Hrts7Fq_kba_maRLognrMXH4CGRQo"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Инициализация бота и ИИ
