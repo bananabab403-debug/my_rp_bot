@@ -6,6 +6,7 @@ from google import genai
 TELEGRAM_BOT_TOKEN = "8736970956:AAG7ZR6tQQDJwoeXepbJovh5HEWaWsJzPZ0"
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+user_sessions = {}
 
 # Инициализация бота и ИИ
 bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
