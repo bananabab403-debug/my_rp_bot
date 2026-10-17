@@ -35,7 +35,7 @@ def send_welcome(message):
             system_instruction=SYSTEM_INSTRUCTION,
             temperature=0.8,
         )
-    ) if 'types' in globals() else ai_client.chats.create(model="gemini-3.8-flash")
+    ) if 'types' in globals() else ai_client.chats.create(model='gemini-2.5-flash')
     
     # Исправление для конфигурации
     chat = ai_client.chats.create(
