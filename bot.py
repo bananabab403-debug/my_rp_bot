@@ -105,4 +105,5 @@ def handle_message(message):
 
 if __name__ == "__main__":
     print(">>> Бот успешно запущен и ждёт сообщений! <<<")
+    bot.remove_webhook()
     bot.infinity_polling()
