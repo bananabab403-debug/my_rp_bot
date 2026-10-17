@@ -2,7 +2,7 @@ import telebot
 from google import genai
 
 # --- ТВОИ КЛЮЧИ ---
-TELEGRAM_BOT_TOKEN = "8736970956:AAFabGeAdaZBMJlCUTBznX89voOTG4q8NUM"
+TELEGRAM_BOT_TOKEN = "8736970956:AAHH49Hrts7Fq_kba_maRLognrMXH4CGRQo"
 GEMINI_API_KEY = "AQ.Ab8RN6J6Bvyn_4OdBBbwK6zAATWwv0d2islYHCN01bbYTK3nlw"
 
 # Инициализация бота и ИИ
