@@ -60,7 +60,7 @@ def send_welcome(message):
     )
     user_sessions[user_id] = chat
 
-    bot.reply_to(message, "Привет,! ✨ Я готов к нашей ролевой игре. Напиши мне что-нибудь, чтобы мы начали!")
+    bot.reply_to(message, "Привет,! Я готов Напиши мне что-нибудь, чтобы мы начали!")
 
 @bot.message_handler(commands=['reset'])
 def reset_chat(message):
@@ -113,9 +113,9 @@ def handle_message(message):
         bot.reply_to(message, response.text)
     except Exception as e:
         print(f"Ошибка: {e}")
-        bot.reply_to(message, "Ой, у меня что-то переклинило... Попробуй написать ещё раз! 💖")
+        bot.reply_to(message, "Ой, у меня что-то переклинило... Попробуй написать ещё раз!")
 
 if __name__ == "__main__":
-    print(">>> Джонни Кейдж вышел на арену! <<<")
+    print(">>> привет сладенький! <<<")
     bot.remove_webhook()
-    bot.infinity_polling(drop_pending_updates=True)
+    bot.infinity_polling()
