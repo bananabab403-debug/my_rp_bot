@@ -116,6 +116,6 @@ def handle_message(message):
         bot.reply_to(message, "Ой, у меня что-то переклинило... Попробуй написать ещё раз! 💖")
 
 if __name__ == "__main__":
-   print(">>> Бот запущен и готов к работе! (v2) <<<")
-   bot.remove_webhook()
-bot.infinity_polling(drop_pending_updates=True)
+    print(">>> Джонни Кейдж вышел на арену! <<<")
+    bot.remove_webhook()
+    bot.infinity_polling(drop_pending_updates=True)
