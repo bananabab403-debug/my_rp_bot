@@ -43,16 +43,16 @@ def send_welcome(message):
     user_id = message.from_user.id
     # Создаем чат с системной инструкцией
     user_sessions[user_id] = ai_client.chats.create(
-        model='gemini-2.5-flash',
+        model='gemini-3.8-flash',
         config=types.GenerateContentConfig(
             system_instruction=SYSTEM_INSTRUCTION,
             temperature=0.8,
         )
-    ) if 'types' in globals() else ai_client.chats.create(model='gemini-2.5-flash')
+    ) if 'types' in globals() else ai_client.chats.create(model='gemini-3.8-flash')
     
     # Исправление для конфигурации
     chat = ai_client.chats.create(
-        model='gemini-2.5-flash',
+        model='gemini-3.8-flash',
         config=genai.types.GenerateContentConfig(
             system_instruction=SYSTEM_INSTRUCTION,
             temperature=0.8
@@ -87,7 +87,7 @@ def handle_message(message):
     try:
         # 4. Отправляем обрезанную историю вместе с системной инструкцией
         response = client.models.generate_content(
-            model='gemini-2.5-flash', # или твоя рабочая версия флеш-модели
+            model='gemini-3.8-flash', # или твоя рабочая версия флеш-модели
             contents=user_histories[user_id],
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_INSTRUCTION,
