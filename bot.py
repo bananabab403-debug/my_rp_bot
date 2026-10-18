@@ -3,7 +3,7 @@ import telebot
 from google import genai
 
 # --- ТВОИ КЛЮЧИ ---
-TELEGRAM_BOT_TOKEN = "8736970956:AAF_QiLOQOG-06YgSL3VwrwtJOqU7aIQkZ8"
+TELEGRAM_BOT_TOKEN = "8736970956:AAEx99zfJ8TNmm-BHMwnxXjzBRDQJzgjt-c"
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
