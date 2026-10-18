@@ -117,5 +117,9 @@ def handle_message(message):
 
 if __name__ == "__main__":
     print(">>> Бот успешно запущен и ждёт сообщений! <<<")
-    bot.remove_webhook(drop_pending_updates=True)
-    bot.infinity_polling()
+    
+    # 1. Просто удаляем вебхук без аргументов
+    bot.remove_webhook()
+    
+    # 2. А сброс зависших обновлений передаем в infinity_polling
+    bot.infinity_polling(drop_pending_updates=True)
