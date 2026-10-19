@@ -7,13 +7,9 @@ from google import genai
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-# Передаем правильную переменную в инициализацию бота
+# Передаем переменную TELEGRAM_TOKEN внутрь TeleBot
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
 client = genai.Client(api_key=GEMINI_API_KEY)
-
-
-# Инициализация бота и ИИ
-bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
 ai_client = genai.Client(api_key=GEMINI_API_KEY)
 user_sessions = {}
 
