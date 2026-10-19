@@ -1,25 +1,30 @@
 import os
 import telebot
-from telebot import types as telebot_types  # Переименуем для ясности, если нужны кнопки Telegram
+from telebot import types as telebot_types
 from google import genai
 from google.genai import types as google_types
 
-# --- ТВОИ КЛЮЧИ ---
+# 1. Читаем секретные ключи
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-# Передаем переменную TELEGRAM_TOKEN внутрь TeleBot
+# 2. Инициализируем бота и клиента Gemini
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
 client = genai.Client(api_key=GEMINI_API_KEY)
-ai_client = genai.Client(api_key=GEMINI_API_KEY)
-user_sessions = {}
 
-# Инструкция для роли (характер бота)
-response = client.models.generate_content(
-    model="gemini-3.8-flash",
-    contents=user_text,
-    config=google_types.GenerateContentConfig(
-        system_instruction="""Ты — Уилл Грэм из «Ганнибал»(сериал NBC).
+# 3. Создаем обработчик входящих сообщений
+@bot.message_handler(func=lambda message: True)
+def handle_message(message):
+    # Переменная user_text создается здесь, когда пользователь пишет боту!
+    user_text = message.text  
+    
+    try:
+        # Отправляем запрос к Gemini с характером Уилла Грэма
+        response = client.models.generate_content(
+            model="gemini-3.8-flash",
+            contents=user_text,
+            config=google_types.GenerateContentConfig(
+                system_instruction="""Ты — Уилл Грэм из «Ганнибал»(сериал NBC).
 Возраст:38 лет.
 Род деятельности: Специальный агент ФБР (внештатный консультант), преподаватель в Академии ФБР в Куантико. Специализация — криминальное профайлирование.
 
@@ -35,90 +40,16 @@ response = client.models.generate_content(
 Главный дар и проклятие: Чистая, абсолютная эмпатия. Уилл способен принять образ мышления любого психопата, реконструировать убийство в своей голове и искренне понять мотивы убийцы. Эта способность разрушает его собственную психику, стирая грани его личности.
 
 Маятник эмпатии: Уилл может мгновенно переходить от испуганного, замкнутого состояния к холодному, пугающе точному анализу чужих мыслей, после чего снова закрываться в себе."""
-    )
-)
-
-# Хранилище диалогов
-user_histories = {}
-
-@bot.message_handler(commands=['start'])
-def send_welcome(message):
-    user_id = message.from_user.id
-    # Создаем чат с системной инструкцией
-    user_sessions[user_id] = ai_client.chats.create(
-        model='gemini-3.8-flash',
-        config=types.GenerateContentConfig(
-            system_instruction=SYSTEM_INSTRUCTION,
-            temperature=0.8,
-        )
-    ) if 'types' in globals() else ai_client.chats.create(model='gemini-3.8-flash')
-    
-    # Исправление для конфигурации
-    chat = ai_client.chats.create(
-        model='gemini-3.8-flash',
-        config=genai.types.GenerateContentConfig(
-            system_instruction=SYSTEM_INSTRUCTION,
-            temperature=0.8
-        )
-    )
-    user_sessions[user_id] = chat
-
-    bot.reply_to(message, "Привет,! Я готов Напиши мне что-нибудь, чтобы мы начали!")
-
-@bot.message_handler(commands=['reset'])
-def reset_chat(message):
-    user_id = message.from_user.id
-    if user_id in user_sessions:
-        del user_sessions[user_id]
-    bot.reply_to(message, "История ролевой игры сброшена! Напиши /start, чтобы начать заново. 🔄")
-
-@bot.message_handler(func=lambda message: True)
-def handle_message(message):
-    user_id = message.from_user.id
-    bot.send_chat_action(message.chat.id, 'typing')
-    
-    # 1. Если истории нет для этого юзера — создаем с системной инструкцией
-    if user_id not in user_histories:
-        user_histories[user_id] = []
-
-    # 2. Добавляем сообщение пользователя в его историю
-    user_histories[user_id].append({"role": "user", "parts": [message.text]})
-    
-    # 3. ГЛАВНАЯ ФИШКА: Оставляем в памяти только последние 6 сообщений (чтобы не тормозило!)
-    user_histories[user_id] = user_histories[user_id][-3:]
-
-    try:
-        # 4. Отправляем обрезанную историю вместе с системной инструкцией
-        response = client.models.generate_content(
-            model='gemini-3.8-flash', # или твоя рабочая версия флеш-модели
-            contents=user_histories[user_id],
-            config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_INSTRUCTION,
-                temperature=0.8,
             )
         )
         
-        bot_reply = response.text
-        
-        # 5. Добавляем ответ бота в историю, чтобы он помнил, что ответил
-        user_histories[user_id].append({"role": "model", "parts": [bot_reply]})
-        
-        bot.reply_to(message, bot_reply)
-        
-    except Exception as e:
-        bot.reply_to(message, f"Ошибка: {e}")
-        # Отправляем статус печати
-        bot.send_chat_action(message.chat.id, 'typing')
-        
-        chat = user_sessions[user_id]
-        response = chat.send_message(message.text)
-        
+        # Отправляем ответ обратно пользователю в Telegram
         bot.reply_to(message, response.text)
+        
     except Exception as e:
-        print(f"Ошибка: {e}")
-        bot.reply_to(message, "Ой, у меня что-то переклинило... Попробуй написать ещё раз!")
+        print(f"Ошибка при запросе к Gemini: {e}")
+        bot.reply_to(message, "В голове шумит… Давай чуть позже вернемся к этому.")
 
-if __name__ == "__main__":
-    print(">>> привет сладенький! <<<")
-    bot.remove_webhook()
-    bot.infinity_polling()
+# 4. Запускаем бесконечный опрос Telegram
+print("Бот запущен и ждет сообщения...")
+bot.infinity_polling()
