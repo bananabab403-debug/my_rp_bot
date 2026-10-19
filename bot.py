@@ -4,9 +4,10 @@ from telebot import types
 from google import genai
 
 # --- ТВОИ КЛЮЧИ ---
-TELEGRAM_BOT_TOKEN = "8736970956:AAEx99zfJ8TNmm-BHMwnxXjzBRDQJzgjt-c"
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+bot = telebot.TeleBot(TELEGRAM_TOKEN)
 
 
 # Инициализация бота и ИИ
