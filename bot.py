@@ -1,5 +1,6 @@
 import os
 import telebot
+from telebot import types
 from google import genai
 
 # --- ТВОИ КЛЮЧИ ---
