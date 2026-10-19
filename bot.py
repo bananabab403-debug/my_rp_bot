@@ -15,13 +15,13 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 # Словарь для хранения историй чатов
 chat_histories = {}
 
-# Конфигурация генерации: ограничиваем максимальное число токенов для ускорения
+# Промпт настроен на тот самый каноничный, острый и бескомпромиссный стиль Уилла
 generation_config = google_types.GenerateContentConfig(
-    system_instruction="""Ты — Уилл Грэм, судебный профайлер ФБР. 
-Характер: замкнутый, уставший, с острой эмпатией и аналитическим складом ума.
-Стиль речи: говоришь короткими, емкими фразами (не более 2-3 предложений), с мрачным сарказмом. Отвечай быстро и лаконично.""",
-    max_output_tokens=200,  # Ограничение длины ответа значительно ускоряет генерацию
-    temperature=0.7
+    system_instruction="""Ты — Уилл Грэм, судебный профайлер ФБР из сериала «Ганнибал». 
+Характер: измученный, замкнутый, обладающий абсолютной эмпатией и пугающе точным аналитическим умом. Ты видишь людей насквозь, читаешь их скрытые мотивы, комплексы и попытки дешевых провокаций.
+Стиль речи: пиши от первого лица. Отвечай резко, саркастично, с холодным презрением к тем, кто пытается тебя задеть. Используй мрачные психологические детали, метафоры и тяжелый, уставший тон человека, который ежедневно копается в сознании убийц. Избегай банальных и шаблонных фраз.""",
+    max_output_tokens=250,  небольшой запас для емкого и хлесткого ответа
+    temperature=0.8         # Чуть выше креативность, чтобы текст был живым и вариативным
 )
 
 @bot.message_handler(func=lambda message: True)
@@ -31,24 +31,21 @@ def handle_message(message):
     
     bot.send_chat_action(chat_id, 'typing')
     
-    # Инициализируем историю для нового чата
     if chat_id not in chat_histories:
         chat_histories[chat_id] = []
     
-    # Добавляем новое сообщение пользователя
     chat_histories[chat_id].append({
         "role": "user", 
         "parts": [{"text": user_text}]
     })
     
-    # ЖЕСТКОЕ ОГРАНИЧЕНИЕ: храним только последние 4 сообщения (2 пары реплик)
+    # Держим последние 4 сообщения для сохранения контекста без задержек
     if len(chat_histories[chat_id]) > 4:
         chat_histories[chat_id] = chat_histories[chat_id][-4:]
     
     try:
         start_time = time.time()
         
-        # Отправляем компактный список сообщений
         response = client.models.generate_content(
             model="gemini-3.8-flash",
             contents=chat_histories[chat_id],
@@ -60,7 +57,6 @@ def handle_message(message):
         
         bot_reply = response.text
         
-        # Запоминаем ответ бота
         chat_histories[chat_id].append({
             "role": "model", 
             "parts": [{"text": bot_reply}]
@@ -70,7 +66,10 @@ def handle_message(message):
         
     except Exception as e:
         print(f"Ошибка при запросе к Gemini: {e}")
-        bot.reply_to(message, "В голове шумит… Давай чуть позже вернемся к этому.")
+        if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
+            bot.reply_to(message, "Мысли путаются… Слишком много шума вокруг. Превышен лимит запросов, дай мне немного времени.")
+        else:
+            bot.reply_to(message, "В голове шумит… Давай чуть позже вернемся к этому.")
 
-print("Бот Уилл Грэм запущен...")
+print("Бот Уилл Грэм запущен в полную силу...")
 bot.infinity_polling()
