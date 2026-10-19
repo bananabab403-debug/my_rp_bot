@@ -6,8 +6,10 @@ from google import genai
 # --- ТВОИ КЛЮЧИ ---
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
+# Передаем правильную переменную в инициализацию бота
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 
 # Инициализация бота и ИИ
